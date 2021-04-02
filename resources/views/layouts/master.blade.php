@@ -9,18 +9,17 @@
     <!-- Bootstrap CSS -->
     {{-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> --}}
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/old.css') }}" rel="stylesheet">
 
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 </head>
   <body>
       <header>
             <nav class="navbar navbar-expand-sm navbar-dark bg-success">
-                <div class="container">
-                <a class="navbar-brand" href="/">Formation pratique DSI</a>
+                <a class="navbar-brand ml-5" href="/">Formation pratique DSI</a>
                     <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
                     aria-expanded="false" aria-label="Toggle navigation"></button>
-                <div class="collapse navbar-collapse" id="collapsibleNavId">
+                <div class="collapse navbar-collapse d-flex justify-conetent-between" id="collapsibleNavId">
                     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                         <li class="nav-item active">
                             <a class="nav-link" href="{{ route('accueil') }}">Accueil <span class="sr-only">(current)</span></a>
@@ -34,20 +33,33 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('produit.ajout') }}">Ajout produit</a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Connexion</a>
-                            <div class="dropdown-menu" aria-labelledby="dropdownId">
-                                <a class="dropdown-item" href="{{ route('login')}}">Se connecter</a>
-                                <a class="dropdown-item" href="#">Deconnexion</a>
-                            </div>
-                        </li>
                     </ul>
                     <form class="form-inline my-2 my-lg-0">
                         <input class="form-control mr-sm-2" type="text" placeholder="Search">
                         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Recherche</button>
                     </form>
+                    <ul class="navbar-nav mt-2 mt-lg-0 mr-5">
+                        @guest  
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Connexion</a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownId">
+                                <a class="dropdown-item" href="{{ route('login')}}">Se connecter</a>
+                                <a class="dropdown-item" href="{{ route('register')}}">Créer un compte</a>
+                            </div>
+                        </li>
+                        @else
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ Auth::user()->name }}</a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownId">
+                                <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('deconnexion').submit();">Deconnexion</a>
+                                <form id="deconnexion" method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                </form>
+                            </div>
+                        </li>
+                        @endguest 
+                    </ul>
                 </div>    
-            </div>
             </nav>
       </header>
       <br/>

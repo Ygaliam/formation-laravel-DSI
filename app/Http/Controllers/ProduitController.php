@@ -16,7 +16,10 @@ class ProduitController extends Controller
      */
     public function index()
     {
-        //
+        $collection = collect ([1,2,3,4,5,6,7,8,9,10]);
+        $produit = Produit::all();
+
+        dd($produit);
     }
 
     /**
@@ -61,7 +64,7 @@ class ProduitController extends Controller
     public function edit(Produit $produit)
     {
         //
-        dd($produit);
+        //dd($produit);
 
         return view('pages.front-office.edit-produit', [
             'produit' => $produit,

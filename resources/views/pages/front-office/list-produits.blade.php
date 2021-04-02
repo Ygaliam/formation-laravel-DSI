@@ -15,6 +15,7 @@
             @endif
             @if ( $lesproduits->count() > 0 )
             <div class="class text-right">
+                @if(Auth::user()!=null && Auth::user()->isAdmin())
                 <a class="btn btn-success" href="{{ route ('produit.ajout') }}" role="button">Ajouter
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -25,7 +26,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                       </svg>
                   </a>
-                  
+                @endif  
             </div><br>
             <table class="table table-hover">
                <thead>
@@ -33,6 +34,7 @@
                        <td>Designation</td>
                        <td>Prix</td>
                        <td>Pays d'origine</td>
+                       <td>Image</td>
                        <td>Actions</td>
                    </tr>
                </thead>
@@ -40,8 +42,9 @@
                    @foreach ($lesproduits as $produit)
                    <tr>
                        <td>{{ $produit->designation }}</td>
-                       <td>{{ $produit->prix }} XOF</td>
+                       <td>{{ $produit->prix }}</td>
                        <td>{{ $produit->pays_source }}</td>
+                       <td><img class="img-responsive" src="{{ asset('storage/produits-image/'.$produit->image) }}" width="50px" height="55px" alt=""></td>
                        <td class="d-flex"> 
                            {{-- <a href="{{ route ('deleteListe', $produit->id) }}" class="btn btn-danger mr-2" >
                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 25px;">

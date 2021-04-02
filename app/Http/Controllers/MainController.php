@@ -8,14 +8,20 @@ use App\Models\Commande;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Exports\ProduitsExport;
+use App\Mail\NouveauProduitAjoutee;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\ProduitFormRequest;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\NouveauProduitNotification;
 
 class MainController extends Controller
 {
     // fonction pour retourner une page 
 public function afficheAccueil()
 {
+    //dd(Auth::user()->role->role);
     return view('pages.front-office.welcome',
     [
         'nomSite' => "Service en ligne",
@@ -144,7 +150,8 @@ public function afficheProcedure($param)
 
         public function ajouterProduit()
         {
-           return view('pages.front-office.ajouter-produit');
+            $produit = new Produit;
+           return view('pages.front-office.ajouter-produit', ["produit"=>$produit]);
         }
 
         public function enregisterProduit( ProduitFormRequest $request)
@@ -161,6 +168,16 @@ public function afficheProcedure($param)
             //     "pays_source"   => "required|min:3|max:255"
             // ]);
 
+            //dd("time()");
+
+            //dd($request->file("image")->getClientOriginalName());
+
+        $imageName = time()."_".$request->file("image")->getClientOriginalName();
+
+        //dd($imageName);
+
+        $request->file("image")->storeAs("public/produits-image", $imageName);
+
         $produit = Produit::create([
 
             'uuid' => Str::uuid(),
@@ -175,8 +192,18 @@ public function afficheProcedure($param)
 
             'like' =>$request->like,
 
-            'poids' =>$request->poids
+            'poids' =>$request->poids,
+
+            'image' =>$imageName
         ]);
+
+        // $user = User::first();
+
+        // Mail::to($user)->send(new NouveauProduitAjoutee($produit));
+
+            // $user = User::first();
+            
+            // Notification::send($user, new NouveauProduitNotification($produit));
 
         return redirect()->back()->with('EnregProduit','Enregistrement Produit avec succes');
 }
@@ -185,7 +212,7 @@ public function afficheProcedure($param)
     {
         // $produit = Produit::find($id);
          $produit = Produit::findOrfail($produit->id);
-        dd($produit);
+        //dd($produit);
 
         return view('pages.front-office.edit-produit', [
             'produit' => $produit,
@@ -194,6 +221,15 @@ public function afficheProcedure($param)
 
     public function updateProduit($id, ProduitFormRequest $request)
     {
+        $imageName = "default-image.png";
+
+        if($request->file("image")){
+        $imageName = time()."_".$request->file("image")->getClientOriginalName();
+
+        $request->file("image")->storeAs("public/produits-image", $imageName);
+
+    }
+
         $produitModif = Produit::where("id", $id)->update([
             'designation' =>$request->designation,
 
@@ -205,7 +241,9 @@ public function afficheProcedure($param)
 
             'like' =>$request->like,
 
-            'poids' =>$request->poids
+            'poids' =>$request->poids,
+
+            'image' => $imageName
         ]);
 
         return redirect()->route('a.liste')->with('statut','Produit modifier avec succes');
@@ -216,5 +254,14 @@ public function afficheProcedure($param)
     {
         return Excel::download(new ProduitsExport, "Produits.xls");
     }
+
+     public function sendMail($produit)
+     {
+         $user = User::first();
+
+         Mail::to($user)->send(new NouveauProduitAjoutee($produit));
+
+         dd('Le mail a bien été envoyé !!');
+     }
 
 }

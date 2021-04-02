@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProduitController;
+use App\Mail\NouveauProduitAjoutee;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,8 +33,17 @@ Route::get('ajouter-produit', [MainController::class, 'ajoutProduit'])->name('a.
 Route::get('ajout2', [MainController::class, 'ajoutProduitEncore'])->name('a.p');
 
 Route::get('listproduit', [MainController::class, 'getList'])->name('a.liste');
+// Route::middleware(['auth', 'isAdmin'])->group(function () {
+Route::middleware(['auth', 'isAdmin'])->prefix('admin')->group(function () {
+    
+    Route::get('produits/ajouter', [MainController::class, 'ajouterProduit'])->name('produit.ajout');
+    Route::put('produits/update/{id}', [MainController::class, 'updateProduit'])->name('produit.update');
+    Route::get('modification/{id}', [MainController::class, 'modifierProduit']);
+    Route::get('export-excel', [MainController::class, 'excelExport'])->name('excel.export');
+    Route::post('produits/enregistrer', [MainController::class, 'enregisterProduit'])->name('produit.enregister');
+    Route::get('produits/modifier/{produit}', [ProduitController::class, 'edit'])->name('produit.modifier');
+});
 
-Route::get('modification/{id}', [MainController::class, 'modifierProduit']);
 
 Route::get('supprimer/{id}', [MainController::class, 'supprimerProduit'])->name('deleteListe');
 
@@ -41,19 +51,33 @@ Route::get('ajoutercommande/{id}', [MainController::class, 'ajoutercommande'])->
 
 Route::get('supprime/{id}', [MainController::class, 'supCommande'])->name('deleteCommande');
 
-Route::get('produits/ajouter', [MainController::class, 'ajouterProduit'])->name('produit.ajout');
+#Utilisons les middlewares
 
-Route::post('produits/enregistrer', [MainController::class, 'enregisterProduit'])->name('produit.enregister');
+//Route::get('produits/ajouter', [MainController::class, 'ajouterProduit'])->middleware('isAdmin')->name('produit.ajout');
+
 
 // Route::get('produits/modifier/{id}', [MainController::class, 'editProduit'])->name('produit.modifier');
-Route::get('produits/modifier/{produit}', [ProduitController::class, 'edit'])->name('produit.modifier');
 
-Route::put('produits/update/{id}', [MainController::class, 'updateProduit'])->name('produit.update');
 
-Route::resource('produit', ProduitController::class);
+// Route::resource('produit', ProduitController::class);
 
-Route::get('export-excel', [MainController::class, 'excelExport'])->name('excel.export');
 
-Route::get('/wyuzer@kdpp', function () {
-    return view('pages.front-office.login');
-})->name('login');
+// Route::get('test-mail', function() {
+//     return new NouveauProduitAjoutee();
+// });
+
+Route::get('send-mail', [MainController::class, 'sendMail']);
+
+// Route::get('/wyuzer@kdpp', function () {
+//     return view('pages.front-office.login');
+// })->name('login');
+
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+require __DIR__.'/auth.php';
